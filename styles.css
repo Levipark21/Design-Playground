@@ -1,0 +1,168 @@
+body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; user-select: none; background: #222; }
+
+/* PANELES FLOTANTES */
+#ui-panel, #edit-panel, #env-panel, #floor-input-panel {
+    background: rgba(30, 30, 30, 0.95); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff; padding: 15px; border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#ui-panel { position: absolute; top: 20px; left: 20px; width: 280px; max-height: 75vh; overflow-y: auto; z-index: 10; display: none; }
+#floor-input-panel { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 280px; z-index: 20; display: none; text-align: center; }
+#edit-panel { display: none; position: absolute; top: 20px; right: 20px; width: 200px; max-height: 80vh; overflow-y: auto; z-index: 10; }
+#env-panel { display: none; position: absolute; bottom: 80px; left: 20px; width: 240px; z-index: 10; }
+
+/* NUEVO: CONTROLES HISTORIAL */
+#history-controls {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 15;
+}
+#btn-undo, #btn-redo {
+    background: #333; color: #fff; border: 1px solid #555;
+    width: 40px; height: 40px; border-radius: 50%;
+    font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+}
+#btn-undo:hover, #btn-redo:hover { background: #4a90e2; border-color: #fff; }
+
+/* BOTONES DE ACCIÓN (FOTOS/PDF) */
+#action-panel {
+    position: absolute; bottom: 20px; right: 20px;
+    display: flex; flex-direction: column; gap: 10px; z-index: 10;
+}
+
+#btn-toggle-menu, #btn-toggle-env {
+    position: absolute; left: 20px;
+    background: #4a90e2; color: white; border: 1px solid #fff;
+    width: 45px; height: 45px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; cursor: pointer; z-index: 100;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+#btn-toggle-menu { top: 20px; }
+#btn-toggle-env { bottom: 20px; background: #333; border-color: #555; }
+
+.btn-big-action {
+    padding: 12px 20px; border: none; border-radius: 30px;
+    font-weight: bold; color: white; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); font-size: 14px;
+    display: flex; align-items: center; gap: 8px; text-transform: uppercase;
+}
+#btn-screenshot { background: #34495e; }
+#btn-export-pdf { background: #e74c3c; }
+#btn-export-pdf:hover { background: #c0392b; transform: translateY(-2px); }
+
+/* CATÁLOGO */
+.accordion-btn { background-color: #444; color: #fff; cursor: pointer; padding: 10px; width: 100%; border: 1px solid #555; text-align: left; outline: none; font-size: 13px; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; }
+.accordion-btn:hover { background-color: #555; } 
+.accordion-btn.active-acc:after { content: "-"; } 
+.accordion-btn:after { content: '+'; font-weight: bold; }
+
+.panel-products { padding: 0 5px; background-color: rgba(0,0,0,0.3); max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; margin-bottom: 5px; }
+.line-selector { width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #4a90e2; border-radius: 6px; margin-bottom: 10px; font-size: 13px; cursor: pointer; }
+
+.btn-product { display: block; width: 100%; padding: 8px; margin: 4px 0; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); cursor: pointer; text-align: left; border-radius: 4px; color: #ccc; font-size: 12px; }
+.btn-product:hover { background: #4a90e2; color: white; } 
+.btn-product.active { background: #4a90e2; border-color: #fff; color: white; font-weight: bold; }
+
+h1 { font-size: 16px; margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+h2 { font-size: 12px; margin: 10px 0 5px 0; color: #aaa; text-transform: uppercase; }
+button { font-family: inherit; transition: all 0.2s; outline: none; }
+
+/* HERRAMIENTAS VISTAS */
+.views-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+.btn-view { padding: 8px; font-size: 11px; cursor: pointer; background: #333; border: 1px solid #555; color: #ddd; border-radius: 4px; }
+.tools-grid { display: flex; gap: 5px; margin-bottom: 15px; }
+.btn-tool { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
+#btn-measure { background: #e67e22; } #btn-measure.active-tool { background: #d35400; border: 2px solid white; }
+#btn-floor { background: #9b59b6; } #btn-floor.active-tool { background: #8e44ad; border: 2px solid white; }
+.projection-toggle { width: 100%; margin-bottom: 10px; padding: 8px; cursor: pointer; background: #4a90e2; color: white; border: none; border-radius: 6px; font-size: 12px; }
+
+/* EDICIÓN */
+.control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.btn-mini { flex: 1; margin: 0 2px; padding: 8px; cursor: pointer; border: none; background: #444; color: #ccc; border-radius: 4px; font-size: 12px; }
+.btn-action { width: 100%; padding: 8px; cursor: pointer; border: none; background: #444; color: white; border-radius: 6px; margin-top:5px; font-size: 12px; }
+.btn-delete { background: #d9534f; }
+.status-btn { font-weight: bold; margin-bottom: 8px; border: none; width: 100%; padding: 8px; cursor: pointer; border-radius: 6px; font-size: 12px; }
+#btn-lock { background: #555; } #btn-lock.is-locked { background: #d9534f; }
+#btn-collision { background: #28a745; } #btn-collision.is-inactive { background: #555; }
+.panel-header-btn { background: none; border: none; color: #aaa; cursor: pointer; font-size: 18px; padding: 0 5px; }
+
+/* COLORES EJES */
+.axis-label-y { color: #4cd137; font-weight: bold; font-size: 14px; width: 15px; display: inline-block; }
+.axis-label-x { color: #e84118; font-weight: bold; font-size: 14px; width: 15px; display: inline-block; }
+.axis-label-z { color: #0097e6; font-weight: bold; font-size: 14px; width: 15px; display: inline-block; }
+
+#budget-box { margin-top: 15px; border-top: 1px solid #555; padding-top: 10px; font-size: 20px; font-weight: bold; color:#4cd137; text-align: right; }
+#loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px; border-radius: 10px; z-index: 2000; text-align: center; border: 1px solid #fff; }
+
+/* INPUTS Y SUELO */
+.bg-options { display: flex; gap: 5px; margin-bottom: 10px; }
+.bg-btn { flex: 1; height: 30px; border-radius: 4px; border: 1px solid #555; cursor: pointer; }
+.bg-white { background: #ffffff; } .bg-green { background: #2ecc71; } .bg-blue { background: #3498db; } .bg-yellow { background: #f1c40f; }
+.panel-subtitle { font-size: 11px; margin: 5px 0; color: #aaa; }
+
+.input-row { display: flex; gap: 5px; margin-bottom: 8px; }
+.input-box { flex: 1; background: #222; border: 1px solid #555; color: white; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; font-size:14px; }
+.input-label { font-size: 10px; color: #aaa; display: block; text-align: left; margin-bottom: 2px; }
+#btn-add-point { background: #9b59b6; width: 100%; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-finish-floor { margin-top:5px; background:#27ae60; width:100%; border:none; padding:10px; border-radius:4px; color:white; display:none; font-weight:bold; cursor:pointer; }
+.btn-reset { margin-top:20px; width:100%; padding:10px; background:#444; color:#ccc; border:none; border-radius:6px; cursor:pointer; }
+
+.floor-colors-grid { display: flex; gap: 5px; margin-bottom: 10px; }
+.f-col-btn { flex: 1; height: 35px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+.f-garnet { background: #A04040; } .f-blue { background: #2980b9; } .f-green { background: #27ae60; } .f-black { background: #2c3e50; }
+
+.measurement-label { position: absolute; background: rgba(0,0,0,0.8); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; pointer-events: none; border: 1px solid white; transform: translate(-50%, -50%); z-index: 5; }
+
+/* MODAL QR */
+#qr-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 3000; align-items: center; justify-content: center;
+}
+.qr-content {
+    background: #fff; color: #333; padding: 25px; border-radius: 15px;
+    text-align: center; max-width: 90%; width: 320px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+.qr-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #222; }
+.qr-desc { font-size: 14px; color: #666; margin-bottom: 20px; }
+#qrcode { margin: 0 auto; display: flex; justify-content: center; }
+.btn-close-qr { margin-top: 20px; background: #333; color: white; padding: 10px 25px; border-radius: 20px; border:none; cursor: pointer; font-weight: bold; }
+
+@media (max-width: 600px) {
+    #ui-panel { top: 75px; left: 10px; right: 10px; width: auto; max-height: 60vh; }
+    #edit-panel { top: 75px; right: 10px; width: 180px; }
+    #btn-toggle-menu { top: 15px; left: 15px; } #btn-toggle-env { bottom: 15px; left: 15px; }
+    #floor-input-panel { top: 15px; width: 90%; }
+    #action-panel { bottom: 15px; right: 15px; }
+    #history-controls { top: 15px; }
+}
+/* BARRA SUPERIOR (SNAP/SAFETY) */
+#top-bar-controls {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 15px; z-index: 100;
+}
+.top-icon-btn {
+    background: #333; color: #fff; border: 1px solid #555;
+    width: 45px; height: 45px; border-radius: 50%;
+    font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+}
+.top-icon-btn:hover { background: #555; }
+.active-snap { background: #27ae60 !important; border-color: #fff; box-shadow: 0 0 10px #27ae60; }
+.active-safety { background: #e74c3c !important; border-color: #fff; box-shadow: 0 0 10px #e74c3c; }
+
+/* Ajuste de controles de historial para no chocar con la top bar */
+#history-controls {
+    top: 80px; /* Bajar un poco */
+}
+
+@media (max-width: 600px) {
+    #top-bar-controls { top: 15px; gap: 10px; }
+    .top-icon-btn { width: 35px; height: 35px; font-size: 16px; }
+    #history-controls { top: 60px; }
+}

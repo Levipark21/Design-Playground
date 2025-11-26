@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Levipark21 Playgrounds</title>
+    
+    <!-- LIBRERÍAS PDF, QR Y COMPRESIÓN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- NUEVO: LZ-String para compresión de datos en URL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loading">
+        <div style="font-size:30px; margin-bottom:10px;">📄</div>
+        <div id="loading-text">Cargando...</div>
+        <div style="font-size:12px; color:#aaa; margin-top:5px;">Por favor, espera.</div>
+    </div>
+
+    <!-- MODAL QR -->
+    <div id="qr-modal">
+        <div class="qr-content">
+            <div class="qr-title">📱 Ver en Realidad Aumentada</div>
+            <div class="qr-desc">Escanea con tu móvil. <br><small style="color:#e74c3c">*Imágenes pesadas excluidas para optimizar QR.</small></div>
+            <div id="qrcode"></div>
+            <button class="btn-close-qr" onclick="document.getElementById('qr-modal').style.display='none'">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="btn-toggle-menu">☰</div>
+    <div id="btn-toggle-env">☀</div> 
+    
+    <!-- BARRA SUPERIOR -->
+    <div id="top-bar-controls">
+        <button id="btn-snap" class="top-icon-btn" title="Snapping / Imán (S)">🧲</button>
+        <button id="btn-toggle-safety" class="top-icon-btn" title="Ver Zonas Seguridad">🛡️</button>
+    </div>
+
+    <div id="history-controls">
+        <button id="btn-undo" title="Deshacer (Ctrl+Z)">↩</button>
+        <button id="btn-redo" title="Rehacer (Ctrl+Y)">↪</button>
+    </div>
+
+    <div id="action-panel">
+        <button id="btn-mobile-ar" class="btn-big-action" style="background:#8e44ad;">📱 Ver en AR</button>
+        <button id="btn-save-project" class="btn-big-action" style="background:#27ae60;">💾 Guardar</button>
+        <button id="btn-load-project" class="btn-big-action" style="background:#f39c12;">📂 Cargar</button>
+        <input type="file" id="project-upload" style="display: none;" accept=".json">
+        <div style="height:10px;"></div>
+        <button id="btn-screenshot" class="btn-big-action">📷 Foto</button>
+        <button id="btn-export-pdf" class="btn-big-action">📄 Exportar Dossier</button>
+    </div>
+
+    <div id="env-panel">
+        <h1>Ambiente / Cielo</h1>
+        <p class="panel-subtitle">Presets</p>
+        <div class="bg-options">
+            <button class="bg-btn" id="env-white" style="background: #ffffff; color:#333; font-weight:bold; font-size:10px;">BLANCO</button>
+            <button class="bg-btn" id="env-morning" style="background: linear-gradient(to right, #87CEEB, #FFD700);">Mañana</button>
+            <button class="bg-btn" id="env-noon" style="background: linear-gradient(to right, #00BFFF, #FFFFFF);">Mediodía</button>
+            <button class="bg-btn" id="env-evening" style="background: linear-gradient(to right, #FF4500, #8A2BE2);">Tarde</button>
+        </div>
+        <p class="panel-subtitle">Posición Sol</p>
+        <input type="range" min="0" max="360" value="45" id="sun-azimuth">
+        <input type="range" min="0" max="90" value="45" id="sun-elevation">
+        <p class="panel-subtitle">Intensidad Luz</p>
+        <input type="range" min="0" max="3" step="0.1" value="1.5" id="light-intensity">
+    </div>
+
+    <div id="floor-input-panel">
+        <h1 style="justify-content:center">✏️ Dibujando Suelo</h1>
+        <div style="display:flex; gap:5px; margin-bottom:10px;">
+            <button id="mode-poly" class="btn-mini active-mode" style="background:#4a90e2; color:white;">Polígono</button>
+            <button id="mode-rect" class="btn-mini">Rectángulo</button>
+        </div>
+        <div id="poly-inputs">
+            <p style="font-size:11px; color:#aaa; margin-top:-5px">Escribe para fijar medidas</p>
+            <div class="input-row">
+                <div style="flex:1">
+                    <span class="input-label">Distancia (m)</span>
+                    <input type="number" id="inp-dist" class="input-box" step="0.5" placeholder="Ratón...">
+                </div>
+                <div style="flex:1">
+                    <span class="input-label">Ángulo (º)</span>
+                    <input type="number" id="inp-ang" class="input-box" step="15" placeholder="Ratón...">
+                </div>
+            </div>
+            <button id="btn-add-point">➕ Añadir Punto</button>
+        </div>
+        <div id="rect-inputs" style="display:none; text-align:center; padding:10px; color:#aaa; font-size:12px;">
+            Haz click y arrastra en el suelo para crear un rectángulo.
+        </div>
+        <button id="btn-close-floor" class="btn-finish-floor">✅ Terminar</button>
+    </div>
+
+    <div id="ui-panel">
+        <h1>-----_LEVIPARK21 Playgrounds <button class="panel-header-btn" id="btn-close-menu">×</button></h1>
+        <button class="projection-toggle" id="btn-projection">👁️ Perspectiva</button>
+        <div class="views-grid">
+            <button class="btn-view" id="view-iso">📦 Iso</button>
+            <button class="btn-view" id="view-top">📐 Planta</button>
+            <button class="btn-view" id="view-front">📏 Alzado</button>
+            <button class="btn-view" id="view-side">🥴 Perfil</button>
+        </div>
+        <div class="tools-grid">
+            <button id="btn-measure" class="btn-tool">📏 Medir</button>
+            <button id="btn-floor" class="btn-tool">✏️ Suelo</button>
+        </div>
+        <button id="btn-upload-trigger" class="btn-view" style="width:100%; margin-bottom:15px; background:#4a90e2; border:none; color:white; font-weight:bold; padding:10px; cursor:pointer;">📂 Subir Modelo 3D</button>
+        <input type="file" id="file-upload" style="display: none;" accept=".glb,.gltf,.jpg,.jpeg,.png">
+        <button id="clear-measures" class="btn-view" style="width:100%; margin-bottom:10px; display:none; background:#d9534f; border:none;">🗑️ Borrar Medidas</button>
+        <h2>Catálogo</h2>
+        <select id="line-select" class="line-selector"></select>
+        <div id="dynamic-catalog"></div>
+        <div id="budget-box">0 €</div>
+        <button id="btn-reset" class="btn-reset">❌ Borrar Todo</button>
+    </div>
+
+    <div id="edit-panel">
+        <h1>Editar <button class="panel-header-btn" id="btn-min-edit">_</button></h1>
+        <div id="edit-content">
+            <button id="btn-lock" class="status-btn">🔓 Fijar</button>
+            <button id="btn-collision" class="status-btn edit-control">💥 Colisión: ON</button>
+            <button id="btn-clone" class="status-btn" style="background: #8e44ad; color:white; margin-top:5px;">🐑 Duplicar</button>
+            
+            <div id="gizmo-controls" style="margin-top:10px; border-top:1px solid #444; padding-top:10px;">
+                <p class="panel-subtitle">Modo de Edición</p>
+                <div class="control-row">
+                    <button class="btn-mini active-mode" id="mode-translate" style="background:#4a90e2; color:white;">⬌ Mover</button>
+                    <button class="btn-mini" id="mode-rotate">↻ Rotar</button>
+                </div>
+            </div>
+            
+            <div id="edit-floor-specific" style="display:none; margin-top:15px; border-top:1px solid #555; padding-top:10px;">
+                <h2>Diseño Suelo</h2>
+                
+                <button id="btn-floor-upload-tex" class="btn-action" style="background:#e67e22; margin-bottom:10px;">🖼️ Cargar Imagen PNG</button>
+
+                <div class="floor-colors-grid">
+                    <button class="f-col-btn f-garnet" id="fc-garnet" title="Granate"></button>
+                    <button class="f-col-btn f-blue" id="fc-blue" title="Azul"></button>
+                    <button class="f-col-btn f-green" id="fc-green" title="Verde"></button>
+                    <button class="f-col-btn f-black" id="fc-black" title="Negro"></button>
+                </div>
+                
+                <div id="texture-mapping-controls" style="display:none; margin-top:10px; border-top:1px solid #444; padding-top:5px;">
+                    <p class="panel-subtitle">Ajustar Imagen</p>
+                    <div style="margin-bottom:5px;">
+                        <span class="input-label">Escala</span>
+                        <input type="range" id="tex-scale" min="0.1" max="5" step="0.1" value="1" style="width:100%">
+                    </div>
+                    <div style="margin-bottom:5px;">
+                        <span class="input-label">Rotación</span>
+                        <input type="range" id="tex-rotate" min="0" max="6.28" step="0.1" value="0" style="width:100%">
+                    </div>
+                    <div class="input-row">
+                        <div style="flex:1">
+                            <span class="input-label">Pos X</span>
+                            <input type="number" id="tex-off-x" class="input-box" step="0.1" value="0">
+                        </div>
+                        <div style="flex:1">
+                            <span class="input-label">Pos Y</span>
+                            <input type="number" id="tex-off-y" class="input-box" step="0.1" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <p style="font-size:10px; color:#aaa; margin-top:10px; text-align:center;">
+                    Valor Suelo: <span style="color:#fff; font-weight:bold;" id="floor-price-display">--</span> €
+                </p>
+            </div>
+            <button class="btn-action btn-delete edit-control" id="btn-delete" style="margin-top:15px">🗑️ Eliminar</button>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
